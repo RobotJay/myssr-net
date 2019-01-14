@@ -9,7 +9,7 @@ from torchvision.models import DenseNet
 import torch.utils.data as torchdata
 from utils.train import train,trainlog
 from torchvision import datasets, models, transforms
-from torchvision.models import resnet50,resnet101,resnet152,resnet18,vgg16
+from utils.ssrdataset import dataset
 import torch.optim as optim
 from torch.optim import lr_scheduler
 
