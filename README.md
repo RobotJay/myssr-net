@@ -1,5 +1,11 @@
 # myssr-net
-参考地址：https://github.com/shamangary/SSR-Net<br>
-相应数据集：
-  https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/.
-  https://github.com/b02901145/SSR-Net_megaage-asian
+References:
+  SSR-Net Github Repository:https://github.com/shamangary/SSR-Net
+Data pre-processing：
+  Download mdb-wiki dataset from https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/.
+  Download MegaAge-Asian dataset from http://mmlab.ie.cuhk.edu.hk/projects/MegaAge/
+Dependencies:
+  opencv
+  pytorch
+
+
