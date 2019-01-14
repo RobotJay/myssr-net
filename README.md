@@ -8,5 +8,6 @@ Data pre-processing：<br>
 Dependencies:<br>
    &nbsp;&nbsp;&nbsp;opencv<br>
    &nbsp;&nbsp;&nbsp;pytorch<br>
-
+Training:<br>
+&nbsp;&nbsp;&nbsp;python3 ssr_train.py
 
