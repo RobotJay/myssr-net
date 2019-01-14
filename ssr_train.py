@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from utils.ssrdataset import collate_fn, dataset
 import torch
-from model.SSRNET92 import MySSRNet
+from model.MySSRNET92 import MySSRNet
 from torchvision.models import DenseNet
 import torch.utils.data as torchdata
 from utils.train import train,trainlog
