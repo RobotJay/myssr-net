@@ -5,15 +5,11 @@ from sklearn.model_selection import train_test_split
 from utils.ssrdataset import collate_fn, dataset
 import torch
 from model.MySSRNET92 import MySSRNet
-from torchvision.models import DenseNet
 import torch.utils.data as torchdata
 from utils.train import train,trainlog
 from torchvision import datasets, models, transforms
-from utils.ssrdataset import dataset
 import torch.optim as optim
 from torch.optim import lr_scheduler
-
-from  torch.nn import CrossEntropyLoss,MSELoss
 import logging
 from utils.data_aug import *
 import argparse
