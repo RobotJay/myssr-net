@@ -8,6 +8,6 @@
 <li>Dependencies:</li>
    &nbsp;&nbsp;&nbsp;opencv<br>
    &nbsp;&nbsp;&nbsp;pytorch<br>
-<li>Training:</li><br>
+<li>Training:</li>
 &nbsp;&nbsp;&nbsp;python3 ssr_train.py
 
