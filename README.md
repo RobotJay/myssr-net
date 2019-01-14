@@ -9,5 +9,6 @@
    &nbsp;&nbsp;&nbsp;opencv<br>
    &nbsp;&nbsp;&nbsp;pytorch<br>
 <li>Training:</li>
-&nbsp;&nbsp;&nbsp;python3 ssr_train.py
+&nbsp;&nbsp;&nbsp;python3 ssr_train.py<br>
+
 
