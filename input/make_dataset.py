@@ -58,11 +58,11 @@ def main():
         # out_ages.append(age[i])
         img = cv2.imread(root_path + str(full_path[i][0]))
         pth = str(full_path[i][0]).replace('/','')
-        cv2.imwrite('/home/heils-server/User/gwb/data/new_wiki/'+pth,img)
+        cv2.imwrite('/home/heils-server/User/gwb/data/wiki/'+pth,img)
         data = data.append(
             pd.DataFrame({'image_pth': pth, 'label': [age[i]]}),
             ignore_index=True)
-    data.to_csv('wiki_age_new.csv', index=None, columns=None)
+    data.to_csv('wiki_age.csv', index=None, columns=None)
 
     # np.savez(output_path,image=np.array(out_imgs), gender=np.array(out_genders), age=np.array(out_ages), img_size=img_size)
 
