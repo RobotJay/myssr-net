@@ -2,17 +2,19 @@
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from utils.ssrdataset import collate_fn, dataset
+from utils.bd_tiangong_dataset import collate_fn, dataset
 import torch
-from model.MySSRNET92 import MySSRNet
+from model.SSRNET92 import MySSRNet,MySSRNet_gen
 import torch.utils.data as torchdata
 from utils.train import train,trainlog
-from torchvision import datasets, models, transforms
 import torch.optim as optim
 from torch.optim import lr_scheduler
+from  torch.nn import CrossEntropyLoss,MSELoss
 import logging
 from utils.data_aug import *
 import argparse
+import torchvision.transforms as transforms
+
 
 def get_args():
     parser = argparse.ArgumentParser(description="This script trains the CNN model for mae and gender estimation.",
@@ -40,39 +42,39 @@ def main():
 
     netType1 = 1
     netType2 = 1
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
-    save_dir = '/home/heils-server/User/gwb/pytorch_classification-master/log/ssr/age/mae_ter'
+    save_dir = '/home/heils-server/User/gwb/myssr_net/log/asian/03'
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     logfile = '%s/trainlog.log'%save_dir
     trainlog(logfile)
 
-    rawdata_root = '/home/heils-server/User/gwb/pytorch_classification-master/input/'
-    all_pd = pd.read_table("/home/heils-server/User/gwb/pytorch_classification-master/input/data.csv",sep=",",
+    rawdata_root = '/home/heils-server/User/gwb/data/asian/asian_train'
+    all_pd = pd.read_table("/home/heils-server/User/gwb/myssr_net/input/asina/asian_train.csv",sep=",",
                          header=None, names=['ImageName', 'label'])
 
     train_pd, val_pd = train_test_split(all_pd, test_size=0.2, random_state=43)
                                         # stratify=all_pd['label'])
     print(val_pd.shape)
-
     '''数据扩增'''
+   
+
     data_transforms = {
         'train': Compose([
-            # RandomRotate(angles=(-15,15)),
-            # RandomResizedCrop(size=(256, 256)),
-            # ExpandBorder(size=(256, 256), resize=True),
-            Resize((92,92)),
+            Resize((92, 92)),
             Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ]),
         'val': Compose([
-            # ExpandBorder(size=(256, 256), resize=True),
             Resize((92,92)),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ]),
     }
 
+
+
     data_set = {}
+
     data_set['train'] = dataset(imgroot=rawdata_root,anno_pd=train_pd,
                                transforms=data_transforms["train"],
                                )
@@ -82,9 +84,9 @@ def main():
 
 
     dataloader = {}
-    dataloader['train']=torch.utils.data.DataLoader(data_set['train'], batch_size=200,
+    dataloader['train']=torch.utils.data.DataLoader(data_set['train'], batch_size=50,
                                                    shuffle=True, num_workers=4,collate_fn=collate_fn)
-    dataloader['val']=torch.utils.data.DataLoader(data_set['val'], batch_size=200,
+    dataloader['val']=torch.utils.data.DataLoader(data_set['val'], batch_size=50,
                                                    shuffle=True, num_workers=4,collate_fn=collate_fn)
     '''model'''
 
@@ -94,24 +96,23 @@ def main():
 
     model = MySSRNet(stage_num, lambda_local, lambda_d)
 
-    base_lr = 0.0001
+    base_lr = 0.001
 
     resume =None
     if resume:
         logging.info('resuming finetune from %s'%resume)
         model.load_state_dict(torch.load(resume))
     model = model.cuda()
-    optimizer = optim.Adam(model.parameters(), lr=base_lr, weight_decay=1e-5)  
+
+
+    optimizer = optim.Adam(model.parameters(), lr=base_lr,weight_decay=1e-5)
     from loss.criteria import MAELoss
     criterion = MAELoss()
 
     exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=6, gamma=0.1)
 
-
-
-
     train(model,
-          epoch_num=500,
+          epoch_num=1500,
           start_epoch=0,
           optimizer=optimizer,
           criterion=criterion,
@@ -120,7 +121,7 @@ def main():
           data_loader=dataloader,
           save_dir=save_dir,
           print_inter=50,
-          val_inter=500)
+          val_inter=1600)
 
 if __name__ == '__main__':
     main()
