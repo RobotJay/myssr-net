@@ -12,14 +12,17 @@ import torch.nn.init as init
 
 class MySSRNet(nn.Module):
     def __init__(self,stage_num,lambda_local,lambda_d):
-    
+    # def __init__(self):
         super(MySSRNet, self).__init__()
 
-       
+        self.stage_num = stage_num
+        self.lambda_local = lambda_local
+        self.lambda_d = lambda_d
 
-        self.stage_num = [3, 3, 3]
-        self.lambda_local = 0.25
-        self.lambda_d = 0.25
+        # self.stage_num = [3, 3, 3]
+        # self.lambda_local = 0.25
+        # self.lambda_d = 0.25
+        # ----------------------------------------------------------------------------
         
 
         self.x_layer1 = nn.Sequential(
@@ -87,7 +90,7 @@ class MySSRNet(nn.Module):
         )
         # ----------------------------------------------------------------------------
 
-        
+      
 
         self.s_layer1 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -100,7 +103,7 @@ class MySSRNet(nn.Module):
             nn.MaxPool2d(kernel_size=8, stride=8)
         )
 
-        
+       
 
         self.s_layer2 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -116,7 +119,7 @@ class MySSRNet(nn.Module):
             nn.MaxPool2d(kernel_size=4, stride=4)
         )
 
-      
+       
 
         self.s_layer3 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -189,7 +192,7 @@ class MySSRNet(nn.Module):
             nn.Linear(6, 3),
             nn.Tanh())
         # --------------------------------------------------------------------------------------------
-        
+   
 
         self.s_layer2_mix = nn.Sequential(
             nn.Dropout(0.2),
@@ -230,7 +233,7 @@ class MySSRNet(nn.Module):
             nn.Linear(250, 3),
             nn.ReLU(inplace=True))
 
-        
+       
 
         self.x_layer1_mix = nn.Sequential(
             nn.Dropout(0.2),
@@ -284,61 +287,61 @@ class MySSRNet(nn.Module):
         s_all = self.s_all(inp)
 
 
-        s_layer4 = self.s_layer4(s_all)
-        s_layer4 = s_layer4.reshape(s_layer4.size(0), -1) 
-        s_layer4_mix = self.s_layer4_mix(s_layer4)  
+        s_layer4 = self.s_layer4(s_all)#[2,10,4,4]
+        s_layer4 = s_layer4.reshape(s_layer4.size(0), -1) #[2,160]
+        s_layer4_mix = self.s_layer4_mix(s_layer4)  #[2,3]
 
-        x_layer4 = self.x_layer4(x_all)
-        x_layer4 = x_layer4.reshape(x_layer4.size(0), -1)
-        x_layer4_mix = self.x_layer4_mix(x_layer4)  
+        x_layer4 = self.x_layer4(x_all)#[2, 10, 4, 4]
+        x_layer4 = x_layer4.reshape(x_layer4.size(0), -1)#[2,160]
+        x_layer4_mix = self.x_layer4_mix(x_layer4)  #[2,3]
 
         #
 
-        feat_a_s1_pre = s_layer4.mul(x_layer4) 
-        delta_s1 = self.delta_s1(feat_a_s1_pre)
+        feat_a_s1_pre = s_layer4.mul(x_layer4) #[2,160]
+        delta_s1 = self.delta_s1(feat_a_s1_pre)#[2,1]
         #
-        feat_a_s1 = s_layer4_mix.mul(x_layer4_mix)
-        feat_a_s1 = self.feat_a_s1(feat_a_s1)
-        pred_a_s1 = self.pred_a_s1(feat_a_s1)
-        local_s1 = self.local_s1(feat_a_s1)
-        #
-        
-        s_layer2 = s_layer2.reshape(s_layer2.size(0), -1)
-        s_layer2_mix = self.s_layer2_mix(s_layer2)
+        feat_a_s1 = s_layer4_mix.mul(x_layer4_mix)#[2, 3]
+        feat_a_s1 = self.feat_a_s1(feat_a_s1)#[2,6]
+        pred_a_s1 = self.pred_a_s1(feat_a_s1)#[2, 3]
+        local_s1 = self.local_s1(feat_a_s1)#[2, 3]
         #
         
-        x_layer2 = x_layer2.reshape(x_layer2.size(0), -1)
-        x_layer2_mix = self.x_layer2_mix(x_layer2)
+        s_layer2 = s_layer2.reshape(s_layer2.size(0), -1)#[2, 90]
+        s_layer2_mix = self.s_layer2_mix(s_layer2)#[2,3]
+        #
+        
+        x_layer2 = x_layer2.reshape(x_layer2.size(0), -1)#[2, 90]
+        x_layer2_mix = self.x_layer2_mix(x_layer2)#[2,3]
 
 
 
-        feat_a_s2_pre = s_layer2.mul(x_layer2)
-        delta_s2 = self.delta_s2(feat_a_s2_pre)
+        feat_a_s2_pre = s_layer2.mul(x_layer2)#[2,90]
+        delta_s2 = self.delta_s2(feat_a_s2_pre)#[2,l1]
 
-        feat_a_s2 = s_layer2_mix.mul(x_layer2_mix)
-        feat_a_s2 = self.feat_a_s2(feat_a_s2)
-        pred_a_s2 = self.pred_a_s2(feat_a_s2)
-        local_s2 = self.local_s2(feat_a_s2)
+        feat_a_s2 = s_layer2_mix.mul(x_layer2_mix)#[2,3]
+        feat_a_s2 = self.feat_a_s2(feat_a_s2)#[2,6]
+        pred_a_s2 = self.pred_a_s2(feat_a_s2)#[2,3]
+        local_s2 = self.local_s2(feat_a_s2)#[2,3]
         # -----------------------------------------------------------------------------------------
 
 
-       
-        s_layer1 = s_layer1.reshape(s_layer1.size(0), -1)
-        s_layer1_mix = self.s_layer1_mix(s_layer1)
+        # s_layer11 = self.s_layer11(s_layer1)#[2, 10, 3, 3]
+        s_layer1 = s_layer1.reshape(s_layer1.size(0), -1)#[2,90]
+        s_layer1_mix = self.s_layer1_mix(s_layer1)#[2, 3]
         #
-       
-        x_layer1 = x_layer1.reshape(x_layer1.size(0), -1)
-        x_layer1_mix = self.x_layer1_mix(x_layer1)
+        # x_layer11 = self.x_layer11(x_layer1)#[2, 10, 3, 3]
+        x_layer1 = x_layer1.reshape(x_layer1.size(0), -1)#[2,90]
+        x_layer1_mix = self.x_layer1_mix(x_layer1)#[2, 3]
         #
-        feat_a_s3_pre = s_layer1.mul(x_layer1)
-        delta_s3 = self.delta_s3(feat_a_s3_pre)
+        feat_a_s3_pre = s_layer1.mul(x_layer1)#[2,90]
+        delta_s3 = self.delta_s3(feat_a_s3_pre)#[2,l1]
 
 
         #
-        feat_a_s3 = s_layer1_mix.mul(x_layer1_mix)
-        feat_a_s3 = self.feat_a_s3(feat_a_s3)
-        pred_a_s3 = self.pred_a_s3(feat_a_s3)
-        local_s3 = self.local_s3(feat_a_s3)#
+        feat_a_s3 = s_layer1_mix.mul(x_layer1_mix)#[2, 3]
+        feat_a_s3 = self.feat_a_s3(feat_a_s3)#[2,6]
+        pred_a_s3 = self.pred_a_s3(feat_a_s3)#[2, 3]
+        local_s3 = self.local_s3(feat_a_s3)#[2, 3]
 
 
 
@@ -377,14 +380,18 @@ class MySSRNet(nn.Module):
 
 class MySSRNet_gen(nn.Module):
     def __init__(self,stage_num,lambda_local,lambda_d):
-    
+    # def __init__(self):
         super(MySSRNet_gen, self).__init__()
 
         self.stage_num = stage_num
         self.lambda_local = lambda_local
         self.lambda_d = lambda_d
 
-        
+        # self.stage_num = [3, 3, 3]
+        # self.lambda_local = 0.25
+        # self.lambda_d = 0.25
+        # ----------------------------------------------------------------------------
+       
 
         self.x_layer1 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -413,7 +420,7 @@ class MySSRNet_gen(nn.Module):
             nn.AvgPool2d(kernel_size=4, stride=4)
         )
 
-       
+      
 
         self.x_layer3 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -430,7 +437,7 @@ class MySSRNet_gen(nn.Module):
             nn.AvgPool2d(kernel_size=2, stride=2)
         )
 
-        
+       
 
         self.x_all = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -451,7 +458,8 @@ class MySSRNet_gen(nn.Module):
         )
         # ----------------------------------------------------------------------------
 
-        
+       
+
         self.s_layer1 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
             nn.BatchNorm2d(16),
@@ -463,7 +471,7 @@ class MySSRNet_gen(nn.Module):
             nn.MaxPool2d(kernel_size=8, stride=8)
         )
 
-        
+       
 
         self.s_layer2 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -479,7 +487,7 @@ class MySSRNet_gen(nn.Module):
             nn.MaxPool2d(kernel_size=4, stride=4)
         )
 
-        
+       
 
         self.s_layer3 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -496,7 +504,7 @@ class MySSRNet_gen(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
 
-       
+        
 
         self.s_all = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -552,7 +560,7 @@ class MySSRNet_gen(nn.Module):
             nn.Linear(6, 3),
             nn.Tanh())
         # --------------------------------------------------------------------------------------------
-        
+    
 
         self.s_layer2_mix = nn.Sequential(
             nn.Dropout(0.2),
@@ -594,6 +602,7 @@ class MySSRNet_gen(nn.Module):
             nn.ReLU(inplace=True))
 
         
+
         self.x_layer1_mix = nn.Sequential(
             nn.Dropout(0.2),
             nn.Linear(250, 3),
@@ -646,64 +655,59 @@ class MySSRNet_gen(nn.Module):
         s_all = self.s_all(inp)
 
 
-        s_layer4 = self.s_layer4(s_all)
-        s_layer4 = s_layer4.reshape(s_layer4.size(0), -1) 
-        s_layer4_mix = self.s_layer4_mix(s_layer4)  
+        s_layer4 = self.s_layer4(s_all)#[2,10,4,4]
+        s_layer4 = s_layer4.reshape(s_layer4.size(0), -1) #[2,160]
+        s_layer4_mix = self.s_layer4_mix(s_layer4)  #[2,3]
 
-        x_layer4 = self.x_layer4(x_all)
-        x_layer4 = x_layer4.reshape(x_layer4.size(0), -1)
-        x_layer4_mix = self.x_layer4_mix(x_layer4)  
+        x_layer4 = self.x_layer4(x_all)#[2, 10, 4, 4]
+        x_layer4 = x_layer4.reshape(x_layer4.size(0), -1)#[2,160]
+        x_layer4_mix = self.x_layer4_mix(x_layer4)  #[2,3]
 
         #
 
-        feat_a_s1_pre = s_layer4.mul(x_layer4) 
-        delta_s1 = self.delta_s1(feat_a_s1_pre)
+        feat_a_s1_pre = s_layer4.mul(x_layer4) #[2,160]
+        delta_s1 = self.delta_s1(feat_a_s1_pre)#[2,1]
         #
-        feat_a_s1 = s_layer4_mix.mul(x_layer4_mix)
-        feat_a_s1 = self.feat_a_s1(feat_a_s1)
-        pred_a_s1 = self.pred_a_s1(feat_a_s1)
-        local_s1 = self.local_s1(feat_a_s1)
+        feat_a_s1 = s_layer4_mix.mul(x_layer4_mix)#[2, 3]
+        feat_a_s1 = self.feat_a_s1(feat_a_s1)#[2,6]
+        pred_a_s1 = self.pred_a_s1(feat_a_s1)#[2, 3]
+        local_s1 = self.local_s1(feat_a_s1)#[2, 3]
         #
-        
-        s_layer2 = s_layer2.reshape(s_layer2.size(0), -1)
-        s_layer2_mix = self.s_layer2_mix(s_layer2)
+        # s_layer22 = self.s_layer22(s_layer2)  # [2, 10, 3, 3]
+        s_layer2 = s_layer2.reshape(s_layer2.size(0), -1)#[2, 90]
+        s_layer2_mix = self.s_layer2_mix(s_layer2)#[2,3]
         #
-        
-        x_layer2 = x_layer2.reshape(x_layer2.size(0), -1)
-        x_layer2_mix = self.x_layer2_mix(x_layer2)
+        # x_layer22 = self.x_layer22(x_layer2)#[2, 10, 3, 3]
+        x_layer2 = x_layer2.reshape(x_layer2.size(0), -1)#[2, 90]
+        x_layer2_mix = self.x_layer2_mix(x_layer2)#[2,3]
 
 
 
-        feat_a_s2_pre = s_layer2.mul(x_layer2)
-        delta_s2 = self.delta_s2(feat_a_s2_pre)
+        feat_a_s2_pre = s_layer2.mul(x_layer2)#[2,90]
+        delta_s2 = self.delta_s2(feat_a_s2_pre)#[2,l1]
 
-        feat_a_s2 = s_layer2_mix.mul(x_layer2_mix)
-        feat_a_s2 = self.feat_a_s2(feat_a_s2)
-        pred_a_s2 = self.pred_a_s2(feat_a_s2)
-        local_s2 = self.local_s2(feat_a_s2)
+        feat_a_s2 = s_layer2_mix.mul(x_layer2_mix)#[2,3]
+        feat_a_s2 = self.feat_a_s2(feat_a_s2)#[2,6]
+        pred_a_s2 = self.pred_a_s2(feat_a_s2)#[2,3]
+        local_s2 = self.local_s2(feat_a_s2)#[2,3]
         # -----------------------------------------------------------------------------------------
 
 
-        
-        s_layer1 = s_layer1.reshape(s_layer1.size(0), -1)
-        s_layer1_mix = self.s_layer1_mix(s_layer1)
+        # s_layer11 = self.s_layer11(s_layer1)#[2, 10, 3, 3]
+        s_layer1 = s_layer1.reshape(s_layer1.size(0), -1)#[2,90]
+        s_layer1_mix = self.s_layer1_mix(s_layer1)#[2, 3]
         #
-        
-        x_layer1 = x_layer1.reshape(x_layer1.size(0), -1)
-        x_layer1_mix = self.x_layer1_mix(x_layer1)
+        # x_layer11 = self.x_layer11(x_layer1)#[2, 10, 3, 3]
+        x_layer1 = x_layer1.reshape(x_layer1.size(0), -1)#[2,90]
+        x_layer1_mix = self.x_layer1_mix(x_layer1)#[2, 3]
         #
-        feat_a_s3_pre = s_layer1.mul(x_layer1)
-        delta_s3 = self.delta_s3(feat_a_s3_pre)
+        feat_a_s3_pre = s_layer1.mul(x_layer1)#[2,90]
+        delta_s3 = self.delta_s3(feat_a_s3_pre)#[2,l1]
 
-
-        #
-        feat_a_s3 = s_layer1_mix.mul(x_layer1_mix)
-        feat_a_s3 = self.feat_a_s3(feat_a_s3)
-        pred_a_s3 = self.pred_a_s3(feat_a_s3)
-        local_s3 = self.local_s3(feat_a_s3)
-
-
-
+        feat_a_s3 = s_layer1_mix.mul(x_layer1_mix)#[2, 3]
+        feat_a_s3 = self.feat_a_s3(feat_a_s3)#[2,6]
+        pred_a_s3 = self.pred_a_s3(feat_a_s3)#[2, 3]
+        local_s3 = self.local_s3(feat_a_s3)#[2, 3]
 
         a = pred_a_s1[:,0]*0
         b = pred_a_s1[:,0]*0
@@ -731,10 +735,13 @@ class MySSRNet_gen(nn.Module):
         age = (a+b+c)*V
         age = t.squeeze(age,1)
 
-
-        
         return age
 
 
 
-
+if __name__ == '__main__':
+    import torch
+    model = MySSRNet_gen()
+    input = torch.autograd.Variable(torch.randn(5, 3, 92, 92))
+    x = model(input)
+    print(x)
