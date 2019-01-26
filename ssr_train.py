@@ -62,12 +62,12 @@ def main():
             # RandomRotate(angles=(-15,15)),
             # RandomResizedCrop(size=(256, 256)),
             # ExpandBorder(size=(256, 256), resize=True),
-            Resize((64,64)),
+            Resize((92,92)),
             Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ]),
         'val': Compose([
             # ExpandBorder(size=(256, 256), resize=True),
-            Resize((64,64)),
+            Resize((92,92)),
             Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]),
     }
