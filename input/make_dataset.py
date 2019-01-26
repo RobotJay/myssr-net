@@ -57,22 +57,6 @@ def main():
         # out_genders.append(int(gender[i]))
         # out_ages.append(age[i])
         img = cv2.imread(root_path + str(full_path[i][0]))
-        if np.random.random() > 0.5:
-            img = img[:, ::-1]
-
-        if np.random.random() > 0.75:
-            img = tf.contrib.keras.preprocessing.image.random_rotation(img, 20, row_axis=0, col_axis=1,
-                                                                             channel_axis=2)
-        if np.random.random() > 0.75:
-            img = tf.contrib.keras.preprocessing.image.random_shear(img, 0.2, row_axis=0, col_axis=1,
-                                                                          channel_axis=2)
-        if np.random.random() > 0.75:
-            img = tf.contrib.keras.preprocessing.image.random_shift(img, 0.2, 0.2, row_axis=0, col_axis=1,
-                                                                          channel_axis=2)
-        if np.random.random() > 0.75:
-            img = tf.contrib.keras.preprocessing.image.random_zoom(img, [0.8, 1.2], row_axis=0, col_axis=1,
-                                                                         channel_axis=2)
-
         pth = str(full_path[i][0]).replace('/','')
         cv2.imwrite('/home/heils-server/User/gwb/data/new_wiki/'+pth,img)
         data = data.append(
