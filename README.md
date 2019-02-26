@@ -10,6 +10,7 @@
    &nbsp;&nbsp;&nbsp;pytorch<br>
 <li>Training:</li>
 &nbsp;&nbsp;&nbsp;python3 ssr_train.py&nbsp;&nbsp;&nbsp;and the min MAELoss is 4.32<br>
-video.py使用摄像头进行验证
-
+video.py使用摄像头进行验证<br>
+<li>pred:</li>
+新增文件模型
 
