@@ -23,11 +23,7 @@ class MySSRNet(nn.Module):
         # self.lambda_local = 0.25
         # self.lambda_d = 0.25
         # ----------------------------------------------------------------------------
-        # self.x = nn.Sequential(
-        #     nn.Conv2d(3,32,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(32),
-        #     nn.ReLU()
-        # )
+        
 
         self.x_layer1 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -40,11 +36,7 @@ class MySSRNet(nn.Module):
             nn.AvgPool2d(kernel_size=8, stride=8)
         )
 
-        # self.xx  = nn.Sequential(
-        #     nn.Conv2d(32,32,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(32),
-        #     nn.ReLU()
-        # )
+        
 
         self.x_layer2 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -60,11 +52,7 @@ class MySSRNet(nn.Module):
             nn.AvgPool2d(kernel_size=4, stride=4)
         )
 
-        # self.xxx = nn.Sequential(
-        #     nn.Conv2d(32,32,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(32),
-        #     nn.ReLU()
-        # )
+        
 
         self.x_layer3 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -81,11 +69,7 @@ class MySSRNet(nn.Module):
             nn.AvgPool2d(kernel_size=2, stride=2)
         )
 
-        # self.xxxx = nn.Sequential(
-        #     nn.Conv2d(32,32,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(32),
-        #     nn.ReLU()
-        # )
+        
 
         self.x_all = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -106,11 +90,7 @@ class MySSRNet(nn.Module):
         )
         # ----------------------------------------------------------------------------
 
-        # self.s = nn.Sequential(
-        #     nn.Conv2d(3,16,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(16),
-        #     nn.Tanh()
-        # )
+        
 
         self.s_layer1 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -123,11 +103,7 @@ class MySSRNet(nn.Module):
             nn.MaxPool2d(kernel_size=8, stride=8)
         )
 
-        # self.ss = nn.Sequential(
-        #     nn.Conv2d(16,16,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(16),
-        #     nn.Tanh()
-        # )
+        
 
         self.s_layer2 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -143,11 +119,7 @@ class MySSRNet(nn.Module):
             nn.MaxPool2d(kernel_size=4, stride=4)
         )
 
-        # self.sss = nn.Sequential(
-        #     nn.Conv2d(16,16,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(16),
-        #     nn.Tanh()
-        # )
+        
 
         self.s_layer3 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -164,11 +136,7 @@ class MySSRNet(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
 
-        # self.ssss = nn.Sequential(
-        #     nn.Conv2d(16,16,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(16),
-        #     nn.Tanh()
-        # )
+        
 
         self.s_all = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -224,10 +192,7 @@ class MySSRNet(nn.Module):
             nn.Linear(6, 3),
             nn.Tanh())
         # --------------------------------------------------------------------------------------------
-        # self.s_layer22 = nn.Sequential(
-        #     nn.Conv2d(16,10, kernel_size=1, stride=1),
-        #     nn.ReLU(),
-        #     nn.MaxPool2d(kernel_size=4, stride=4))
+        
 
         self.s_layer2_mix = nn.Sequential(
             nn.Dropout(0.2),
@@ -236,11 +201,7 @@ class MySSRNet(nn.Module):
 
 
 
-        # self.x_layer22 = nn.Sequential(
-        #     nn.Conv2d(32,10, kernel_size=1, stride=1),
-        #     nn.ReLU(),
-        #     nn.AvgPool2d(kernel_size=4, stride=4)
-        # )
+        
 
         self.x_layer2_mix = nn.Sequential(
             nn.Dropout(0.2),
@@ -265,22 +226,14 @@ class MySSRNet(nn.Module):
             nn.Tanh())
 
     # -----------------------------------------------------------------------------------------
-    #     self.s_layer11 = nn.Sequential(
-    #         nn.Conv2d(16, 10, kernel_size=1, stride=1),
-    #         nn.ReLU(),
-    #         nn.MaxPool2d(kernel_size=8, stride=8)
-    #     )
+    
 
         self.s_layer1_mix = nn.Sequential(
             nn.Dropout(0.2),
             nn.Linear(250, 3),
             nn.ReLU(inplace=True))
 
-        # self.x_layer11 = nn.Sequential(
-        #     nn.Conv2d(32,10, kernel_size=1, stride=1),
-        #     nn.ReLU(),
-        #     nn.AvgPool2d(kernel_size=8, stride=8)
-        # )
+        
 
         self.x_layer1_mix = nn.Sequential(
             nn.Dropout(0.2),
@@ -352,11 +305,11 @@ class MySSRNet(nn.Module):
         pred_a_s1 = self.pred_a_s1(feat_a_s1)#[2, 3]
         local_s1 = self.local_s1(feat_a_s1)#[2, 3]
         #
-        # s_layer22 = self.s_layer22(s_layer2)  # [2, 10, 3, 3]
+        
         s_layer2 = s_layer2.reshape(s_layer2.size(0), -1)#[2, 90]
         s_layer2_mix = self.s_layer2_mix(s_layer2)#[2,3]
         #
-        # x_layer22 = self.x_layer22(x_layer2)#[2, 10, 3, 3]
+        
         x_layer2 = x_layer2.reshape(x_layer2.size(0), -1)#[2, 90]
         x_layer2_mix = self.x_layer2_mix(x_layer2)#[2,3]
 
@@ -372,11 +325,11 @@ class MySSRNet(nn.Module):
         # -----------------------------------------------------------------------------------------
 
 
-        # s_layer11 = self.s_layer11(s_layer1)#[2, 10, 3, 3]
+       
         s_layer1 = s_layer1.reshape(s_layer1.size(0), -1)#[2,90]
         s_layer1_mix = self.s_layer1_mix(s_layer1)#[2, 3]
         #
-        # x_layer11 = self.x_layer11(x_layer1)#[2, 10, 3, 3]
+        
         x_layer1 = x_layer1.reshape(x_layer1.size(0), -1)#[2,90]
         x_layer1_mix = self.x_layer1_mix(x_layer1)#[2, 3]
         #
@@ -438,11 +391,7 @@ class MySSRNet_gen(nn.Module):
         # self.lambda_local = 0.25
         # self.lambda_d = 0.25
         # ----------------------------------------------------------------------------
-        # self.x = nn.Sequential(
-        #     nn.Conv2d(3,32,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(32),
-        #     nn.ReLU()
-        # )
+      
 
         self.x_layer1 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -455,11 +404,7 @@ class MySSRNet_gen(nn.Module):
             nn.AvgPool2d(kernel_size=8, stride=8)
         )
 
-        # self.xx  = nn.Sequential(
-        #     nn.Conv2d(32,32,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(32),
-        #     nn.ReLU()
-        # )
+        
 
         self.x_layer2 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -475,11 +420,7 @@ class MySSRNet_gen(nn.Module):
             nn.AvgPool2d(kernel_size=4, stride=4)
         )
 
-        # self.xxx = nn.Sequential(
-        #     nn.Conv2d(32,32,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(32),
-        #     nn.ReLU()
-        # )
+        
 
         self.x_layer3 = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -496,11 +437,7 @@ class MySSRNet_gen(nn.Module):
             nn.AvgPool2d(kernel_size=2, stride=2)
         )
 
-        # self.xxxx = nn.Sequential(
-        #     nn.Conv2d(32,32,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(32),
-        #     nn.ReLU()
-        # )
+       
 
         self.x_all = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, stride=1),
@@ -521,11 +458,7 @@ class MySSRNet_gen(nn.Module):
         )
         # ----------------------------------------------------------------------------
 
-        # self.s = nn.Sequential(
-        #     nn.Conv2d(3,16,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(16),
-        #     nn.Tanh()
-        # )
+       
 
         self.s_layer1 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -538,11 +471,7 @@ class MySSRNet_gen(nn.Module):
             nn.MaxPool2d(kernel_size=8, stride=8)
         )
 
-        # self.ss = nn.Sequential(
-        #     nn.Conv2d(16,16,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(16),
-        #     nn.Tanh()
-        # )
+        
 
         self.s_layer2 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -558,11 +487,7 @@ class MySSRNet_gen(nn.Module):
             nn.MaxPool2d(kernel_size=4, stride=4)
         )
 
-        # self.sss = nn.Sequential(
-        #     nn.Conv2d(16,16,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(16),
-        #     nn.Tanh()
-        # )
+        
 
         self.s_layer3 = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -579,11 +504,7 @@ class MySSRNet_gen(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
 
-        # self.ssss = nn.Sequential(
-        #     nn.Conv2d(16,16,kernel_size=3, stride = 1),
-        #     nn.BatchNorm2d(16),
-        #     nn.Tanh()
-        # )
+        
 
         self.s_all = nn.Sequential(
             nn.Conv2d(3, 16, kernel_size=3, stride=1),
@@ -639,23 +560,13 @@ class MySSRNet_gen(nn.Module):
             nn.Linear(6, 3),
             nn.Tanh())
         # --------------------------------------------------------------------------------------------
-        # self.s_layer22 = nn.Sequential(
-        #     nn.Conv2d(16,10, kernel_size=1, stride=1),
-        #     nn.ReLU(),
-        #     nn.MaxPool2d(kernel_size=4, stride=4))
+        
 
         self.s_layer2_mix = nn.Sequential(
             nn.Dropout(0.2),
             nn.Linear(250, 3),
             nn.ReLU(inplace=True))
 
-
-
-        # self.x_layer22 = nn.Sequential(
-        #     nn.Conv2d(32,10, kernel_size=1, stride=1),
-        #     nn.ReLU(),
-        #     nn.AvgPool2d(kernel_size=4, stride=4)
-        # )
 
         self.x_layer2_mix = nn.Sequential(
             nn.Dropout(0.2),
@@ -680,22 +591,14 @@ class MySSRNet_gen(nn.Module):
             nn.Tanh())
 
     # -----------------------------------------------------------------------------------------
-    #     self.s_layer11 = nn.Sequential(
-    #         nn.Conv2d(16, 10, kernel_size=1, stride=1),
-    #         nn.ReLU(),
-    #         nn.MaxPool2d(kernel_size=8, stride=8)
-    #     )
+   
 
         self.s_layer1_mix = nn.Sequential(
             nn.Dropout(0.2),
             nn.Linear(250, 3),
             nn.ReLU(inplace=True))
 
-        # self.x_layer11 = nn.Sequential(
-        #     nn.Conv2d(32,10, kernel_size=1, stride=1),
-        #     nn.ReLU(),
-        #     nn.AvgPool2d(kernel_size=8, stride=8)
-        # )
+       
 
         self.x_layer1_mix = nn.Sequential(
             nn.Dropout(0.2),
@@ -767,11 +670,11 @@ class MySSRNet_gen(nn.Module):
         pred_a_s1 = self.pred_a_s1(feat_a_s1)#[2, 3]
         local_s1 = self.local_s1(feat_a_s1)#[2, 3]
         #
-        # s_layer22 = self.s_layer22(s_layer2)  # [2, 10, 3, 3]
+        
         s_layer2 = s_layer2.reshape(s_layer2.size(0), -1)#[2, 90]
         s_layer2_mix = self.s_layer2_mix(s_layer2)#[2,3]
         #
-        # x_layer22 = self.x_layer22(x_layer2)#[2, 10, 3, 3]
+       
         x_layer2 = x_layer2.reshape(x_layer2.size(0), -1)#[2, 90]
         x_layer2_mix = self.x_layer2_mix(x_layer2)#[2,3]
 
@@ -787,7 +690,7 @@ class MySSRNet_gen(nn.Module):
         # -----------------------------------------------------------------------------------------
 
 
-        # s_layer11 = self.s_layer11(s_layer1)#[2, 10, 3, 3]
+     
         s_layer1 = s_layer1.reshape(s_layer1.size(0), -1)#[2,90]
         s_layer1_mix = self.s_layer1_mix(s_layer1)#[2, 3]
         #
